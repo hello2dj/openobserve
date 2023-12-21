@@ -87,9 +87,11 @@ const getDefaultDashboardPanelData: any = () => ({
           latitude: null,
           longitude: null,
           weight: null,
+          name: null,
+          value: null,
           source: null,
           target: null,
-          value: null,
+          // value: null,
         },
         config: {
           promql_legend: "",
@@ -178,9 +180,11 @@ const useDashboardPanelData = () => {
         latitude: null,
         longitude: null,
         weight: null,
+        name: null,
+        value: null,
         source: null,
         target: null,
-        value: null,
+        // value: null,
       },
       config: {
         promql_legend: "",
@@ -484,6 +488,42 @@ const useDashboardPanelData = () => {
     }
   };
 
+  const addMapName = (row: any) => {
+    if (
+      !dashboardPanelData.data.queries[
+        dashboardPanelData.layout.currentQueryIndex
+      ].fields.name
+    ) {
+      dashboardPanelData.data.queries[
+        dashboardPanelData.layout.currentQueryIndex
+      ].fields.name = {
+        label: generateLabelFromName(row.name),
+        alias: "name",
+        column: row.name,
+        color: getNewColorValue(),
+        aggregationFunction: null, // You can set the appropriate aggregation function here
+      };
+    }
+  };
+
+  const addMapValue = (row: any) => {
+    if (
+      !dashboardPanelData.data.queries[
+        dashboardPanelData.layout.currentQueryIndex
+      ].fields.value
+    ) {
+      dashboardPanelData.data.queries[
+        dashboardPanelData.layout.currentQueryIndex
+      ].fields.value = {
+        label: generateLabelFromName(row.name),
+        alias: "value",
+        column: row.name,
+        color: getNewColorValue(),
+        aggregationFunction: null, // You can set the appropriate aggregation function here
+      };
+    }
+  };
+
   const addSource = (row: any) => {
     if (
       !dashboardPanelData.data.queries[
@@ -562,6 +602,8 @@ const useDashboardPanelData = () => {
           query.fields.latitude = null;
           query.fields.longitude = null;
           query.fields.weight = null;
+          query.fields.name = null;
+          query.fields.value = null;
           query.fields.source = null;
           query.fields.target = null;
           query.fields.value = null;
@@ -604,6 +646,8 @@ const useDashboardPanelData = () => {
           query.fields.latitude = null;
           query.fields.longitude = null;
           query.fields.weight = null;
+          query.fields.name = null;
+          query.fields.value = null;
           query.fields.source = null;
           query.fields.target = null;
           query.fields.value = null;
@@ -660,6 +704,11 @@ const useDashboardPanelData = () => {
         dashboardPanelData.data.queries[
           dashboardPanelData.layout.currentQueryIndex
         ].fields.filter = [];
+        dashboardPanelData.data.queries?.forEach((query: any) => {
+          query.fields.latitude = null;
+          query.fields.longitude = null;
+          query.fields.weight = null;
+        });
         break;
       case "sankey":
         dashboardPanelData.data.queries[
@@ -786,6 +835,18 @@ const useDashboardPanelData = () => {
       dashboardPanelData.layout.currentQueryIndex
     ].fields.weight = null;
   };
+
+  const removeMapName = () => {
+    dashboardPanelData.data.queries[
+      dashboardPanelData.layout.currentQueryIndex
+    ].fields.name = null;
+  }
+
+  const removeMapValue = () => {
+    dashboardPanelData.data.queries[
+      dashboardPanelData.layout.currentQueryIndex
+    ].fields.value = null;
+  }
 
   const removeSource = () => {
     dashboardPanelData.data.queries[
@@ -988,6 +1049,12 @@ const useDashboardPanelData = () => {
       ].fields.weight = null;
       dashboardPanelData.data.queries[
         dashboardPanelData.layout.currentQueryIndex
+      ].fields.name = null;
+      dashboardPanelData.data.queries[
+        dashboardPanelData.layout.currentQueryIndex
+      ].fields.value = null;
+      dashboardPanelData.data.queries[
+        dashboardPanelData.layout.currentQueryIndex
       ].fields.source = null;
       dashboardPanelData.data.queries[
         dashboardPanelData.layout.currentQueryIndex
@@ -1030,6 +1097,14 @@ const useDashboardPanelData = () => {
               dashboardPanelData.data.queries[
                 dashboardPanelData.layout.currentQueryIndex
               ].fields.weight;
+          } else if(name === "name"){
+            field = dashboardPanelData.data.queries[
+              dashboardPanelData.layout.currentQueryIndex
+            ].fields.name;
+          } else if(name === "value"){
+            field = dashboardPanelData.data.queries[
+              dashboardPanelData.layout.currentQueryIndex
+            ].fields.value;
           } else if (name === "source") {
             field =
               dashboardPanelData.data.queries[
@@ -1228,6 +1303,34 @@ const useDashboardPanelData = () => {
           field.column = newName;
         }
 
+        //Check if the field is in the name fields
+        field =
+          dashboardPanelData.data.queries[
+            dashboardPanelData.layout.currentQueryIndex
+          ].fields.name;
+
+        if (field && field.alias == oldName) {
+          const newName = newArray[changedIndex[0]]?.name;
+
+          // Update the field alias and column to the new name
+          field.alias = newName;
+          field.column = newName;
+        }
+
+        //Check if the field is in the value fields
+        field =
+          dashboardPanelData.data.queries[
+            dashboardPanelData.layout.currentQueryIndex
+          ].fields.value;
+
+        if (field && field.alias == oldName) {
+          const newName = newArray[changedIndex[0]]?.name;
+
+          // Update the field alias and column to the new name
+          field.alias = newName;
+          field.column = newName;
+        }
+
         //Check if the field is in the source fields array
         field =
           dashboardPanelData.data.queries[
@@ -1283,6 +1386,8 @@ const useDashboardPanelData = () => {
     addLatitude,
     addLongitude,
     addWeight,
+    addMapName,
+    addMapValue,
     addSource,
     addTarget,
     addValue,
@@ -1293,6 +1398,8 @@ const useDashboardPanelData = () => {
     removeLatitude,
     removeLongitude,
     removeWeight,
+    removeMapName,
+    removeMapValue,
     removeSource,
     removeTarget,
     removeValue,

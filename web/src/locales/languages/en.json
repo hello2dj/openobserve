@@ -616,6 +616,8 @@
     "latitude": "Latitude",
     "longitude": "Longitude",
     "weight": "Weight",
+    "mapname": "Name",
+    "mapvalue": "Value",
     "source": "Source",
     "target": "Target",
     "value": "Value"
