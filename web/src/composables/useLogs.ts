@@ -325,7 +325,10 @@ const useLogs = () => {
             selectedStream = itemObj;
           }
         });
-        searchObj.data.stream.selectedStream = selectedStream;
+
+        if (store.state.zoConfig.defaultSearch == "true") {
+          searchObj.data.stream.selectedStream = selectedStream;
+        }
       } else {
         searchObj.data.errorMsg = "No stream found in selected organization!";
       }
@@ -672,7 +675,7 @@ const useLogs = () => {
         partitionTotal: [],
         paginations: [],
       };
-      
+
       searchObj.data.queryResults.partitionDetail.partitions = [
         [queryReq.query.start_time, queryReq.query.end_time],
       ];
@@ -819,6 +822,11 @@ const useLogs = () => {
         return;
       }
 
+      if (searchObj.data.stream.selectedStream.value == "") {
+        searchObj.loading = false;
+        return;
+      }
+
       const queryReq = buildSearch();
 
       // reset query data and get partition detail for given query.
@@ -924,8 +932,8 @@ const useLogs = () => {
         if (
           searchObj.data.queryResults.aggs == undefined ||
           (searchObj.loadingHistogram == false &&
-          searchObj.meta.showHistogram == true &&
-          searchObj.meta.sqlMode == false)
+            searchObj.meta.showHistogram == true &&
+            searchObj.meta.sqlMode == false)
         ) {
           getHistogramQueryData(histogramQueryReq);
         }
