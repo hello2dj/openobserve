@@ -48,7 +48,7 @@ pub async fn send(items: &[FileKey], node_uuid: Option<String>) -> Result<(), an
                 && (node.status == NodeStatus::Prepare || node.status == NodeStatus::Online)
                 && (cluster::is_querier(&node.role) || cluster::is_compactor(&node.role))
         })
-        .unwrap()
+        .unwrap_or_default()
     };
     let local_node_uuid = cluster::LOCAL_NODE_UUID.clone();
     let mut events = EVENTS.write().await;
