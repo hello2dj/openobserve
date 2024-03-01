@@ -1126,7 +1126,7 @@ pub async fn search_partition(
 #[post("/{org_id}/_search_follower")]
 pub async fn search_follower(
     org_id: web::Path<String>,
-    in_req: HttpRequest,
+    _in_req: HttpRequest,
     body: web::Bytes,
 ) -> Result<HttpResponse, Error> {
     let start = std::time::Instant::now();
@@ -1140,26 +1140,9 @@ pub async fn search_follower(
 
     log::info!("search_follower start rpc_req: {:?}", rpc_req);
 
-    let user_id = in_req.headers().get("user_id").unwrap();
-
     let stream_type_str = &rpc_req.stream_type;
 
     let stream_type = StreamType::from(stream_type_str.as_str());
-
-    let resp: SearchService::sql::Sql = match crate::service::search::sql::Sql::new(&rpc_req).await
-    {
-        Ok(v) => v,
-        Err(e) => {
-            return Ok(match e {
-                errors::Error::ErrorCode(code) => HttpResponse::InternalServerError()
-                    .json(meta::http::HttpResponse::error_code(code)),
-                _ => HttpResponse::InternalServerError().json(meta::http::HttpResponse::error(
-                    StatusCode::INTERNAL_SERVER_ERROR.into(),
-                    e.to_string(),
-                )),
-            });
-        }
-    };
 
     // Check permissions on stream
     #[cfg(feature = "enterprise")]
@@ -1167,6 +1150,24 @@ pub async fn search_follower(
         use crate::common::{
             infra::config::USERS,
             utils::auth::{is_root_user, AuthExtractor},
+        };
+
+        let user_id = _in_req.headers().get("user_id").unwrap();
+
+        let resp: SearchService::sql::Sql = match crate::service::search::sql::Sql::new(&rpc_req)
+            .await
+        {
+            Ok(v) => v,
+            Err(e) => {
+                return Ok(match e {
+                    errors::Error::ErrorCode(code) => HttpResponse::InternalServerError()
+                        .json(meta::http::HttpResponse::error_code(code)),
+                    _ => HttpResponse::InternalServerError().json(meta::http::HttpResponse::error(
+                        StatusCode::INTERNAL_SERVER_ERROR.into(),
+                        e.to_string(),
+                    )),
+                });
+            }
         };
 
         if !is_root_user(user_id.to_str().unwrap()) {
