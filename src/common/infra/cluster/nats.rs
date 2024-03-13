@@ -227,7 +227,7 @@ pub(crate) async fn leave() -> Result<()> {
 
     let key = format!("/nodes/{}", *LOCAL_NODE_UUID);
     let client = get_coordinator().await;
-    if let Err(e) = client.delete(&key, false, NEED_WATCH).await {
+    if let Err(e) = client.delete(&key, false, NEED_WATCH, None).await {
         return Err(Error::Message(format!("leave node error: {}", e)));
     }
 
